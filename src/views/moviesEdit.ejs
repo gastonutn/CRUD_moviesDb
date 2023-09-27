@@ -16,16 +16,20 @@
     <section class="formulario">
         <form action="/movies/update/<%= Movie.id %>?_method=PUT" method="POST">
             <label for="title">Title </label>
-            <p><input type="text" name="title" id="title" value="<%= Movie.title %>" required></p>
+            <p><input type="text" name="title" id="title" value="<%= Movie.title %>" ></p>
+            <small ><%= locals.errors && (errors.title && errors.title.msg) %></small><br>
             <label for="rating">Rating </label>
-            <p><input type="number" name="rating" id="rating" value="<%= Movie.rating %>" required></p>
+            <p><input type="text" name="rating" id="rating" value="<%= Movie.rating %>" ></p>
+            <small ><%= locals.errors && (errors.rating && errors.rating.msg) %></small><br>
             <label for="awards">Awards </label>
-            <p><input type="number" name="awards" id="awards" value="<%= Movie.awards %>" required></p>
+            <p><input type="number" name="awards" id="awards" value="<%= Movie.awards %>" ></p>
+            <small ><%= locals.errors && (errors.awards && errors.awards.msg) %></small><br>
             <label for="release_date">Release date </label>
-            <p><input type="date" name="release_date" id="release_date" value="<%= (moment(Movie.release_date).format('YYYY-MM-DD')) %>" required></p>
+            <p><input type="date" name="release_date" id="release_date" value="<%= (moment(Movie.release_date).format('YYYY-MM-DD')) %>" ></p>
+            <small ><%= locals.errors && (errors.release_date && errors.release_date.msg) %></small><br>
             <label for="length">Length </label>
-            <p><input type="number" name="length" id="" value="<%= Movie.length %>" required></p>
-            <br>
+            <p><input type="number" name="length" id="" value="<%= Movie.length %>" ></p>
+            <small ><%= locals.errors && (errors.length && errors.length.msg) %></small><br>
             <p> <button class="botonAgregar" type="submit">Actualizar</button>
         
             <a  class="botonVolver" href="/movies">Listado de Películas</a></p>

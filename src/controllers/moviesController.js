@@ -1,6 +1,7 @@
 const db = require('../database/models');
 const sequelize = db.sequelize;
 const moment= require('moment')
+const { validationResult }=require('express-validator')
 //Otra forma de llamar a los modelos
 const Movies = db.Movie;
 
@@ -47,19 +48,30 @@ const moviesController = {
     },
     create: function (req, res) {
         // TODO
-        const {title,rating,release_date,awards,length}=req.body
-        db.Movie.create({
-            title: title.trim(),
-            rating,
-            release_date,
-            awards,
-            length,
+        let errors=validationResult(req)
+        if(errors.isEmpty()){
+            const {title,rating,release_date,awards,length}=req.body
+            db.Movie.create({
+                title: title.trim(),
+                rating,
+                release_date,
+                awards,
+                length,
+    
+            })
+            .then(movie => {
+                console.log(movie);
+                return res.redirect('/movies')
+            })
 
-        })
-        .then(movie => {
-            console.log(movie);
-            return res.redirect('/movies')
-        })
+        }else { 
+            return res.render('moviesAdd',{
+                errors: errors.mapped(),
+                old: req.body
+            })
+
+        }
+       
 
         // return res.send(req.body)
     },
@@ -79,53 +91,68 @@ const moviesController = {
     },
     update: function (req,res) {
         // TODO
-        const {title,rating,release_date,awards,length}=req.body
-        db.Movie.update(
-            {
-                title: title.trim(),
-            rating,
-            release_date,
-            awards,
-            length
-            },
-            {
-                where:{
-                    id: req.params.id
+        let errors=validationResult(req)
+        if(errors.isEmpty()){
+            const {title,rating,release_date,awards,length}=req.body
+            db.Movie.update(
+                {
+                    title: title.trim(),
+                rating,
+                release_date,
+                awards,
+                length
+                },
+                {
+                    where:{
+                        id: req.params.id
+                    }
                 }
-            }
-        ).then(response => {
-            console.log(response)
+            ).then(response => {
+                console.log(response)
+                db.Movie.findByPk(req.params.id)
+                .then(movie => {
+                    res.render('moviesDetail',{movie})
+                })
+                
+            }).catch(error => console.log(error));
+
+        }else {
             db.Movie.findByPk(req.params.id)
-            .then(movie => {
-                res.render('moviesDetail',{movie})
-            })
-            
-        }).catch(error => console.log(error));
-        
+            .then(Movie => {
+                res.render('moviesEdit',{Movie,
+                    errors: errors.mapped(),
+                    moment
+                })
+            })}
+                 
     },
     delete: function (req, res) {
         // TODO
         db.Movie.findByPk(req.params.id)
-        .then(movie=> {
-         
-         return res.render('moviesDelete',{
-             Movie:movie,
-             moment
-         })
+           .then(movie=> {
+            
+            return res.render('moviesDelete',{
+                Movie:movie
+              
+            })
 
-        })
-        .catch(error => console.log(error));
+           })
+           .catch(error => console.log(error));
      
     },
     destroy: function (req, res) {
         // TODO
+        
         db.Movie.destroy({
             where: {
                 id: req.params.id
             }
-        })
-    }
-
+        }).then(response => {
+            
+            return res.redirect('/')
+           
+            
+        }).catch(error => console.log(error));}
 }
 
 module.exports = moviesController;
